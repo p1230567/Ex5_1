@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Ex5_1</string>
+    <string name="tv_title">收到3秒後回覆</string>
+    <string name="ticker">你收到一封簡訊</string>
+    <string name="tv_submit">請輸入文字!</string>
+    <string name="action_settings">Settings</string>
+</resources>
