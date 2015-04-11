@@ -86,6 +86,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 et_submit.setText("");
+                tv_result.setText("");
                 notificationManager.cancel(NOTIFICATION_ID);
             }
         });
