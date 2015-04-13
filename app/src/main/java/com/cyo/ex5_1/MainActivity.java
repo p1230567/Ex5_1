@@ -2,10 +2,9 @@ package com.cyo.ex5_1;
 
 import android.app.Activity;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,16 +20,14 @@ public class MainActivity extends Activity {
     private Button btn_submit, btn_cancel;
     private TextView tv_result;
     private EditText et_submit;
-    private final static int NOTIFICATION_ID = 100;
-    private NotificationManager notificationManager;
-    private String content;
+    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         findView();
+
 
     }
 
@@ -42,32 +39,14 @@ public class MainActivity extends Activity {
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                content = et_submit.getText().toString();
-                Intent intent = new Intent(MainActivity.this, notification.class);
+                final String content = et_submit.getText().toString();
+                intent = new Intent(MainActivity.this, NotificationService.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("content", content);
                 intent.putExtras(bundle);
-                Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.this
-                        , 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                Notification notification = new Notification.Builder(MainActivity.this)
-                        //狀態列的文字
-                        .setTicker(getString(R.string.ticker))
-                                //訊息面板的標題
-                        .setContentTitle(getString(R.string.tv_title))
-                                //訊息面板的內容文字
-                        .setContentText(content)
-                                //訊息的圖示
-                        .setSmallIcon(R.drawable.ic_secret_notification)
-                                //點擊後會自動移除狀態列上的通知訊息
-                        .setAutoCancel(true)
-                                //等使用者點了之後才會開啟指定的Activity
-                        .setContentIntent(pendingIntent)
-                                //加入狀態列下拉後的進一步操作
-                        .setSound(soundUri)
-                        .build();
-                //呼叫notify()送出通知訊息
-                notificationManager.notify(NOTIFICATION_ID, notification);
+                //                啟動服務
+                startService(intent);
+//                建立一個執行緒讓顯示文字部分漢通知分開操作，並且延遲3000毫秒
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -79,6 +58,7 @@ public class MainActivity extends Activity {
 
                     }
                 }).start();
+
             }
         });
 
@@ -87,7 +67,8 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 et_submit.setText("");
                 tv_result.setText("");
-                notificationManager.cancel(NOTIFICATION_ID);
+//                停止服務
+                stopService(intent);
             }
         });
 
